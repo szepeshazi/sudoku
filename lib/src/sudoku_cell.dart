@@ -4,7 +4,7 @@ class SudokuCell {
 
   set value(int newValue) {
     _candidates = null;
-    _value = newValue;
+    _value = newValue == 0 ? null : newValue;
   }
 
   get value => _value;

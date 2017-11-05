@@ -76,7 +76,7 @@ class RectangularGameBoard<T> {
   List<List<T>> get columns {
     List<List<T>> _columns = [];
     for (var i = 0; i < x; i++)
-      _columns[i] = [];
+      _columns.add([]);
 
     for (var i = 0; i < x * y; i++) {
       _columns[i % x].add(board.elementAt(i));
