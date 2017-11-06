@@ -42,7 +42,6 @@ class SudokuRules {
 
   EliminationResult hasValueInSameRow(int value, CellLocation location) {
     EliminationResult result;
-    print('hasValueInSameRow, value: $value, location: $location');
     for (var i = 0; i < board.x; i++) {
       if (i != location.x && rows[location.y][i].value == value) {
         result = new EliminationResult()

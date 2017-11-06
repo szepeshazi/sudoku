@@ -97,7 +97,7 @@ class RectangularGameBoard<T> {
   }
 
   Map<NeighborCellDirection, T> neighborsByDirection(CellLocation location, {bool includeSelf: false}) {
-    Map<NeighborCellDirection, T> neigbors;
+    Map<NeighborCellDirection, T> neigbors = {};
     final keys = includeSelf ? directionMap.keys : directionMap.keys.skip(1);
     for (var key in keys) {
       neigbors[key] = elementAt(location + directionMap[key], orElse: () => null);
