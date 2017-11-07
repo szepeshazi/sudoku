@@ -12,16 +12,31 @@ class SudokuGame {
     print(board);
     rules = new SudokuRules(board);
 
-    for (int i = 0; i < board.x; i++) {
-      CellLocation location = new CellLocation(i, 0);
-      List<EliminationResult> eliminations = rules.evaluate(location);
-      if (eliminations != null && eliminations.isNotEmpty) {
-        for (var elimination in eliminations) {
-          print('${elimination.value} can be removed at $location due to ${elimination.reason} occuring at ${elimination.locations}');
-          SudokuCell cell = board.elementAt(location);
-          cell.removeCandidate(elimination.value);
+    int pass = 0;
+    int removed;
+    do {
+      pass++;
+      removed = 0;
+      for (int j = 0; j < board.y; j++) {
+        for (int i = 0; i < board.x; i++) {
+          CellLocation location = new CellLocation(i, j);
+          List<EliminationResult> eliminations = rules.evaluate(location);
+          if (eliminations != null && eliminations.isNotEmpty) {
+            for (var elimination in eliminations) {
+              print(
+                  '${elimination.value} can be removed at $location due to ${elimination
+                      .reason} occuring at ${elimination
+                      .locations}');
+              SudokuCell cell = board.elementAt(location);
+              cell.removeCandidate(elimination.value);
+              removed++;
+            }
+          }
         }
       }
-    }
+      print('Pass $pass, removed $removed candidates');
+    } while (removed > 0);
+    print('Done');
+    print(board);
   }
 }
