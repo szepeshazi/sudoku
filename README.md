@@ -1,6 +1,7 @@
-# sudoku_core
+# Sudoku Universe
 
-A sample command-line application.
+A sudoku solver Dart application.
 
-Created from templates made available by Stagehand under a BSD-style
+This app will solve sudoku riddles for you. It will also explain on each step why a potential value can be eliminated at a given board location.
+
 [license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
