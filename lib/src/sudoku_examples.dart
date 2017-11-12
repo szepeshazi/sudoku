@@ -1,5 +1,4 @@
 
-
 const List<List<int>> easy = const [
   const [0, 0, 0, 1, 0, 0, 0, 0, 3],
   const [0, 0, 6, 3, 7, 0, 0, 4, 8],
@@ -11,6 +10,7 @@ const List<List<int>> easy = const [
   const [8, 6, 0, 0, 2, 4, 5, 0, 0],
   const [3, 0, 0, 0, 0, 8, 0, 0, 0],
 ];
+
 const List<List<int>> hard = const [
   const [0, 6, 5, 0, 0, 0, 1, 0, 0],
   const [4, 7, 0, 5, 0, 1, 0, 0, 9],
@@ -21,4 +21,16 @@ const List<List<int>> hard = const [
   const [0, 0, 0, 0, 0, 4, 0, 0, 3],
   const [5, 0, 0, 6, 0, 8, 0, 2, 1],
   const [0, 0, 6, 0, 0, 0, 5, 7, 0],
+];
+
+const List<List<int>> hard2 = const [
+  const [1, 0, 0, 0, 0, 8, 0, 4, 0],
+  const [4, 0, 0, 7, 0, 0, 9, 0, 0],
+  const [0, 0, 0, 5, 4, 0, 0, 1, 0],
+  const [0, 0, 1, 8, 0, 0, 0, 0, 3],
+  const [0, 0, 2, 0, 3, 0, 8, 0, 0],
+  const [3, 0, 0, 0, 0, 4, 6, 0, 0],
+  const [0, 2, 0, 0, 5, 9, 0, 0, 0],
+  const [0, 0, 9, 0, 0, 2, 0, 0, 4],
+  const [0, 6, 0, 4, 0, 0, 0, 0, 2],
 ];

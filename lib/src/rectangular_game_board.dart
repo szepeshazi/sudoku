@@ -1,7 +1,5 @@
 enum NeighborCellDirection { self, topLeft, top, topRight, right, bottomRight, bottom, bottomLeft, left }
 
-enum NeighborCellHeading { self, northWest, north, northEast, east, southEast, south, southWest, west }
-
 class CellLocation {
   final int x;
   final int y;
@@ -9,6 +7,17 @@ class CellLocation {
   CellLocation(this.x, this.y);
 
   operator +(CellLocation other) => new CellLocation(x + other.x, y + other.y);
+
+  @override
+  operator ==(other) => (other is CellLocation && x == other.x && y == other.y);
+
+  @override
+  int get hashCode {
+    int result = 17;
+    result = 37 * result + x;
+    result = 37 * result + y;
+    return result;
+  }
 
   @override
   String toString() => 'Location($x, $y)';
@@ -26,30 +35,23 @@ final Map<NeighborCellDirection, CellLocation> directionMap = {
   NeighborCellDirection.left: new CellLocation(-1, 0),
 };
 
-final Map<NeighborCellHeading, CellLocation> headingMap = {
-  NeighborCellHeading.self: new CellLocation(0, 0),
-  NeighborCellHeading.northWest: new CellLocation(-1, -1),
-  NeighborCellHeading.north: new CellLocation(0, -1),
-  NeighborCellHeading.northEast: new CellLocation(1, -1),
-  NeighborCellHeading.east: new CellLocation(1, 0),
-  NeighborCellHeading.southEast: new CellLocation(1, 1),
-  NeighborCellHeading.south: new CellLocation(0, 1),
-  NeighborCellHeading.southWest: new CellLocation(-1, 1),
-  NeighborCellHeading.west: new CellLocation(-1, 0),
-};
-
 class RectangularGameBoard<T> {
   final int x;
   final int y;
 
   List<T> board;
+  List<List<T>> _rows;
+  List<List<T>> _columns;
+  Map<CellLocation, T> _mapRep;
 
   RectangularGameBoard(this.x, this.y) : board = new List<T>(x * y);
 
   List<List<T>> get rows {
-    List<List<T>> _rows = [];
-    for (var i = 0; i < y; i++) {
-      _rows.add(board.getRange(i * y, (i + 1) * y).toList());
+    if (_rows == null) {
+      _rows = [];
+      for (var i = 0; i < y; i++) {
+        _rows.add(board.getRange(i * y, (i + 1) * y).toList());
+      }
     }
     return _rows;
   }
@@ -57,25 +59,47 @@ class RectangularGameBoard<T> {
   set rows(List<List<T>> newRows) {
     board = [];
     newRows.forEach(board.addAll);
+    clearCache();
   }
 
   List<List<T>> get columns {
-    List<List<T>> _columns = [];
-    for (var i = 0; i < x; i++) _columns.add([]);
-
-    for (var i = 0; i < x * y; i++) {
-      _columns[i % x].add(board.elementAt(i));
+    if (_columns == null) {
+      _columns = [];
+      for (var i = 0; i < x; i++) _columns.add([]);
+      for (var i = 0; i < x * y; i++) {
+        _columns[i % x].add(board.elementAt(i));
+      }
     }
     return _columns;
   }
 
-  set Columns(List<List<T>> newColumns) {
+  set columns(List<List<T>> newColumns) {
     board = [];
     for (var i = 0; i < y; i++) {
       for (var j = 0; j < x; j++) {
         board.add(columns[j][i]);
       }
     }
+    clearCache();
+  }
+
+  Map<CellLocation, T> get asMap {
+    if (_mapRep == null) {
+      _mapRep = {};
+      for (var j = 0; j < y; j++) {
+        for (var i = 0; i < x; i++) {
+          var location = new CellLocation(i, j);
+          _mapRep[location] = elementAt(location);
+        }
+      }
+    }
+    return _mapRep;
+  }
+
+  void clearCache() {
+    _rows = null;
+    _columns = null;
+    _mapRep = null;
   }
 
   bool isValidLocation(CellLocation location) {
@@ -90,31 +114,35 @@ class RectangularGameBoard<T> {
       if (orElse != null) {
         element = orElse();
       } else {
-        throw new ArgumentError.value('location', 'Invalid CellLocation');
+        throw new ArgumentError.value(location, 'Invalid cell location');
       }
     }
     return element;
   }
 
-  Map<NeighborCellDirection, T> neighborsByDirection(CellLocation location, {bool includeSelf: false}) {
-    Map<NeighborCellDirection, T> neigbors = {};
-    final keys = includeSelf ? directionMap.keys : directionMap.keys.skip(1);
-    for (var key in keys) {
-      neigbors[key] = elementAt(location + directionMap[key], orElse: () => null);
-    }
-    return neigbors;
+  List<CellLocation> neighborLocations(CellLocation location, {bool includeSelf: false}) {
+    List<CellLocation> locations;
+    locations = includeSelf ? directionMap.values : directionMap.values.skip(1);
+    locations.retainWhere((location) => isValidLocation(location));
+    return locations.toList();
   }
 
-  Map<NeighborCellHeading, T> neighborsByHeading(CellLocation location, {bool includeSelf: false}) {
-    Map<NeighborCellHeading, T> neigbors;
-    final keys = includeSelf ? headingMap.keys : headingMap.keys.skip(1);
-    for (var key in keys) {
-      neigbors[key] = elementAt(location + directionMap[key], orElse: () => null);
-    }
-    return neigbors;
+  List<CellLocation> sameRowLocations(CellLocation location, {bool includeSelf: false}) {
+    List<CellLocation> locations;
+    List<int> xCoords = new List.generate(x, (i) => i);
+    if (!includeSelf) xCoords.remove(location.x);
+    locations = xCoords.map((coord) => new CellLocation(coord, location.y));
+    return locations.toList();
   }
 
-  @override
+  List<CellLocation> sameColumnLocations(CellLocation location, {bool includeSelf: false}) {
+    List<CellLocation> locations;
+    List<int> yCoords = new List.generate(y, (i) => i);
+    if (!includeSelf) yCoords.remove(location.y);
+    locations = yCoords.map((coord) => new CellLocation(location.x, coord));
+    return locations.toList();
+  }
+
+    @override
   String toString() => rows.map((row) => '$row').join('\r\n');
-
 }

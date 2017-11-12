@@ -16,13 +16,13 @@ class SudokuCell {
 
   get value => _value;
 
-  set candidates(List<int> newValues) {
+  set candidates(Set<int> newValues) {
     _value = null;
     _candidates = newValues.toSet();
     _validate();
   }
 
-  get candidates => _candidates;
+  Set<int> get candidates => _candidates;
 
   void removeCandidate(int candidate) {
     _candidates.remove(candidate);
