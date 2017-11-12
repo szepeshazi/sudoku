@@ -6,10 +6,10 @@ class CellLocation {
 
   CellLocation(this.x, this.y);
 
-  operator +(CellLocation other) => new CellLocation(x + other.x, y + other.y);
+  CellLocation operator +(CellLocation other) => new CellLocation(x + other.x, y + other.y);
 
   @override
-  operator ==(other) => (other is CellLocation && x == other.x && y == other.y);
+  bool operator ==(dynamic other) => (other is CellLocation && x == other.x && y == other.y);
 
   @override
   int get hashCode {

@@ -135,7 +135,7 @@ class SudokuBoard extends RectangularGameBoard<SudokuCell> {
   int sectionIndex(CellLocation location) =>
       location.x ~/ SudokuBoard.sectionSize + (location.y ~/ SudokuBoard.sectionSize) * SudokuBoard.sectionSize;
 
-  CellLocation sectionCenter(index) {
+  CellLocation sectionCenter(int index) {
     final x = (index % SudokuBoard.sectionSize) * SudokuBoard.sectionSize + 1;
     final y = (index ~/ SudokuBoard.sectionSize) * SudokuBoard.sectionSize + 1;
     return new CellLocation(x, y);

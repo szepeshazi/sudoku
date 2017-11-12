@@ -23,7 +23,7 @@ class SudokuRules {
   SudokuRules(this.board)
       : rows = board.rows,
         columns = board.columns,
-        sections = board.sections {}
+        sections = board.sections;
 
   List<EliminationResult> evaluate(CellLocation location, {bool useAdvancedRules: false}) {
     List<EliminationResult> results;
@@ -197,7 +197,6 @@ class SudokuRules {
     for (var setSize = 1; setSize <= maxSetSize; setSize++) {
       // Form n-sized sets of candidate values and check if all has the same locations
     }
-
 
     return result;
   }

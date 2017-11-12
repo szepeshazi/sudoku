@@ -14,7 +14,7 @@ class SudokuCell {
     }
   }
 
-  get value => _value;
+  int get value => _value;
 
   set candidates(Set<int> newValues) {
     _value = null;
@@ -37,5 +37,5 @@ class SudokuCell {
   }
 
   @override
-  String toString() => _value != null ? 'Cell($value)' : 'Cell(${_candidates})';
+  String toString() => _value != null ? 'Cell($value)' : 'Cell($_candidates)';
 }
