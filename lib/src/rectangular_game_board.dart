@@ -131,16 +131,16 @@ class RectangularGameBoard<T> {
     List<CellLocation> locations;
     List<int> xCoords = new List.generate(x, (i) => i);
     if (!includeSelf) xCoords.remove(location.x);
-    locations = xCoords.map((coord) => new CellLocation(coord, location.y));
-    return locations.toList();
+    locations = xCoords.map((coord) => new CellLocation(coord, location.y)).toList();
+    return locations;
   }
 
   List<CellLocation> sameColumnLocations(CellLocation location, {bool includeSelf: false}) {
     List<CellLocation> locations;
     List<int> yCoords = new List.generate(y, (i) => i);
     if (!includeSelf) yCoords.remove(location.y);
-    locations = yCoords.map((coord) => new CellLocation(location.x, coord));
-    return locations.toList();
+    locations = yCoords.map((coord) => new CellLocation(location.x, coord)).toList();
+    return locations;
   }
 
     @override

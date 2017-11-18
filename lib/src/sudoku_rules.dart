@@ -49,10 +49,7 @@ class SudokuRules {
   EliminationResult hasValueInSameRow(int value, CellLocation location) {
     EliminationResult result;
     List<CellLocation> sameValueLocations =
-    board.sameRowLocations(location).where((loc) =>
-    board
-        .elementAt(loc)
-        .value == value).toList();
+        board.sameRowLocations(location).where((loc) => board.elementAt(loc).value == value).toList();
 
     if (sameValueLocations?.length > 0) {
       result = new EliminationResult()
@@ -66,10 +63,7 @@ class SudokuRules {
   EliminationResult hasValueInSameColumn(int value, CellLocation location) {
     EliminationResult result;
     List<CellLocation> sameValueLocations =
-    board.sameColumnLocations(location).where((loc) =>
-    board
-        .elementAt(loc)
-        .value == value);
+        board.sameColumnLocations(location).where((loc) => board.elementAt(loc).value == value).toList();
 
     if (sameValueLocations?.length > 0) {
       result = new EliminationResult()
@@ -83,10 +77,7 @@ class SudokuRules {
   EliminationResult hasValueInSameSection(int value, CellLocation location) {
     EliminationResult result;
     List<CellLocation> sameValueLocations =
-    board.sameSectionLocations(location).where((loc) =>
-    board
-        .elementAt(loc)
-        .value == value);
+        board.sameSectionLocations(location).where((loc) => board.elementAt(loc).value == value).toList();
 
     if (sameValueLocations?.length > 0) {
       result = new EliminationResult()
@@ -100,7 +91,8 @@ class SudokuRules {
   EliminationResult isValueLockedByOtherSection(int value, CellLocation location) {
     EliminationResult result;
     List<int> relatedSectionIdices = board.sameRowSectionIndices(location);
-    List<Map<CellLocation, SudokuCell>> relatedSections = relatedSectionIdices.map((i) => board.sectionsAsMap[i]);
+    List<Map<CellLocation, SudokuCell>> relatedSections =
+        relatedSectionIdices.map((i) => board.sectionsAsMap[i]).toList();
     for (var section in relatedSections) {
       List<CellLocation> sameCandidates = [];
       for (var loc in section.keys) {
@@ -118,7 +110,7 @@ class SudokuRules {
     }
     if (result == null) {
       relatedSectionIdices = board.sameColumnSectionIndices(location);
-      relatedSections = relatedSectionIdices.map((i) => board.sectionsAsMap[i]);
+      relatedSections = relatedSectionIdices.map((i) => board.sectionsAsMap[i]).toList();
       for (var section in relatedSections) {
         List<CellLocation> sameCandidates = [];
         for (var loc in section.keys) {
@@ -142,26 +134,21 @@ class SudokuRules {
     EliminationResult result;
     final emptySet = new Set<int>();
     var sectionLocations = board.sameSectionLocations(location, includeSelf: true);
-    Set<int> otherCandidateValues = board
-        .elementAt(location)
-        .candidates
-        .where((candidate) => candidate != value)
-        .toSet();
+    Set<int> otherCandidateValues =
+        board.elementAt(location).candidates.where((candidate) => candidate != value).toSet();
 
     Map<int, List<CellLocation>> candidateLocations = {};
     for (var candidate in otherCandidateValues) {
       for (var loc in sectionLocations) {
-        if ((board
-            .elementAt(loc)
-            .candidates ?? emptySet).contains(candidate)) {
+        if ((board.elementAt(loc).candidates ?? emptySet).contains(candidate)) {
           candidateLocations[candidate] ??= [];
           candidateLocations[candidate].add(loc);
         }
       }
     }
 
-    int singleValue = candidateLocations.keys.firstWhere((cd) => candidateLocations[cd].length == 1,
-        orElse: () => null);
+    int singleValue =
+        candidateLocations.keys.firstWhere((cd) => candidateLocations[cd].length == 1, orElse: () => null);
     if (singleValue != null) {
       result = new EliminationResult()
         ..reason = EliminationRule.isOtherSingleCandidateInSection
@@ -176,18 +163,14 @@ class SudokuRules {
     EliminationResult result;
     final emptySet = new Set<int>();
     var sectionLocations = board.sameSectionLocations(location);
-    Set<int> otherCandidateValues = board
-        .elementAt(location)
-        .candidates
+    Set<int> otherCandidateValues = board.elementAt(location).candidates
       ..removeWhere((candidate) => candidate == value);
     int maxSetSize = otherCandidateValues.length;
 
     Map<int, List<CellLocation>> candidateLocations = {};
     for (var candidate in otherCandidateValues) {
       for (var loc in sectionLocations) {
-        if ((board
-            .elementAt(loc)
-            .candidates ?? emptySet).contains(candidate)) {
+        if ((board.elementAt(loc).candidates ?? emptySet).contains(candidate)) {
           candidateLocations[candidate] ??= [];
           candidateLocations[candidate].add(loc);
         }

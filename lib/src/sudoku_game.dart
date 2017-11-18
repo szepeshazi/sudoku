@@ -1,16 +1,14 @@
 import 'package:sudoku_core/sudoku_core.dart';
 
 class SudokuGame {
-  SudokuBoard board = new SudokuBoard();
-
-  SudokuRules rules;
 
   void start(List<List<int>> rows) {
+    SudokuBoard board = new SudokuBoard();
     List<List<SudokuCell>> transformedRows =
         rows.map((row) => row.map((value) => new SudokuCell()..value = value)).toList();
     board.rows = transformedRows;
     print(board);
-    rules = new SudokuRules(board);
+    SudokuRules rules = new SudokuRules(board);
 
     int pass = 0;
     Map<CellLocation, SudokuCell> filled = {};
@@ -43,5 +41,32 @@ class SudokuGame {
     } while (removed > 0);
     print('Done, filled ${filled.length} cell(s): $filled');
     print(board);
+  }
+
+  List<List<EliminationResult>> solve(SudokuBoard board) {
+    List<List<EliminationResult>> steps = [];
+    SudokuRules rules = new SudokuRules(board);
+
+    int pass = 0;
+    int removed;
+    do {
+      pass++;
+      removed = 0;
+      for (var location in board.asMap.keys) {
+        List<EliminationResult> eliminations = rules.evaluate(location, useAdvancedRules: pass > 1);
+        if ((eliminations ?? const []).isNotEmpty) {
+          steps.add(eliminations);
+          for (var elimination in eliminations) {
+            SudokuCell cell = board.elementAt(location);
+            cell.removeCandidate(elimination.value);
+            if (cell.value != null) {
+              board.cleanUp(location);
+            }
+            removed++;
+          }
+        }
+      }
+    } while (removed > 0);
+    return steps;
   }
 }
