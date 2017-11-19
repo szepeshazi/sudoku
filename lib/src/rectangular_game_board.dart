@@ -15,7 +15,7 @@ class CellLocation {
   int get hashCode {
     int result = 17;
     result = 37 * result + x;
-    result = 37 * result + y;
+    result = 37 * result * x + y;
     return result;
   }
 
@@ -35,7 +35,12 @@ final Map<NeighborCellDirection, CellLocation> directionMap = {
   NeighborCellDirection.left: new CellLocation(-1, 0),
 };
 
-class RectangularGameBoard<T> {
+// ignore: one_member_abstracts
+abstract class Cloneable<T> {
+  T clone();
+}
+
+class RectangularGameBoard<T extends Cloneable<T>> {
   final int x;
   final int y;
 

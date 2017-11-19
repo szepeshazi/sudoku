@@ -9,6 +9,22 @@ class SudokuBoard extends RectangularGameBoard<SudokuCell> {
 
   SudokuBoard() : super(boardSize, boardSize);
 
+  factory SudokuBoard.fromLiteral(List<List<int>> boardDefinition) {
+    SudokuBoard board = new SudokuBoard();
+
+    List<List<SudokuCell>> transformedRows =
+    hard.map((row) => row.map((value) => new SudokuCell()..value = value)).toList();
+    board.rows = transformedRows;
+
+    return board;
+  }
+
+  bool isCompleted() => board.firstWhere((cell) => cell.value == null, orElse: null) == null;
+
+  bool isValid() {
+    return false;
+  }
+
   Map<CellLocation, SudokuCell> cleanUp(CellLocation location, {Map<CellLocation, SudokuCell> filled}) {
     int value = elementAt(location).value;
     Map<CellLocation, SudokuCell> newlyFilled = {};

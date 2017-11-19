@@ -9,9 +9,18 @@ enum EliminationRule {
 }
 
 class EliminationResult {
+
+  /// Location of the cell where we can eliminate a given candidate
+  CellLocation location;
+
+  /// The candidate value that can be eliminated
   int value;
-  List<CellLocation> locations;
+
+  /// The reason why the candidate value van be eliminated
   EliminationRule reason;
+
+  /// List of cell locations that caused the current EliminationRule to be applied
+  List<CellLocation> offendingLocations;
 }
 
 class SudokuRules {
@@ -55,7 +64,7 @@ class SudokuRules {
       result = new EliminationResult()
         ..reason = EliminationRule.valueInSameRow
         ..value = value
-        ..locations = [sameValueLocations.first];
+        ..offendingLocations = [sameValueLocations.first];
     }
     return result;
   }
@@ -69,7 +78,7 @@ class SudokuRules {
       result = new EliminationResult()
         ..reason = EliminationRule.valueInSameColumn
         ..value = value
-        ..locations = [sameValueLocations.first];
+        ..offendingLocations = [sameValueLocations.first];
     }
     return result;
   }
@@ -83,7 +92,7 @@ class SudokuRules {
       result = new EliminationResult()
         ..reason = EliminationRule.valueInSameSection
         ..value = value
-        ..locations = [sameValueLocations.first];
+        ..offendingLocations = [sameValueLocations.first];
     }
     return result;
   }
@@ -104,7 +113,7 @@ class SudokuRules {
         result = new EliminationResult()
           ..reason = EliminationRule.valueLockedByOtherSection
           ..value = value
-          ..locations = sameCandidates;
+          ..offendingLocations = sameCandidates;
         break;
       }
     }
@@ -122,7 +131,7 @@ class SudokuRules {
           result = new EliminationResult()
             ..reason = EliminationRule.valueLockedByOtherSection
             ..value = value
-            ..locations = sameCandidates;
+            ..offendingLocations = sameCandidates;
           break;
         }
       }
@@ -153,7 +162,7 @@ class SudokuRules {
       result = new EliminationResult()
         ..reason = EliminationRule.isOtherSingleCandidateInSection
         ..value = value
-        ..locations = candidateLocations[singleValue];
+        ..offendingLocations = candidateLocations[singleValue];
     }
 
     return result;

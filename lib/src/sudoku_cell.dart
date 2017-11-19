@@ -1,6 +1,6 @@
 import 'package:sudoku_core/sudoku_core.dart';
 
-class SudokuCell {
+class SudokuCell extends Cloneable<SudokuCell> {
   int _value;
   Set<int> _candidates;
 
@@ -38,4 +38,11 @@ class SudokuCell {
 
   @override
   String toString() => _value != null ? 'Cell($value)' : 'Cell($_candidates)';
+
+  @override
+  SudokuCell clone() {
+    return new SudokuCell()
+    ..value = value
+    ..candidates = candidates;
+  }
 }

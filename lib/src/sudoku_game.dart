@@ -22,7 +22,7 @@ class SudokuGame {
           for (var elimination in eliminations) {
             print('${elimination.value} can be removed at $location due to ${elimination
                 .reason} occuring at ${elimination
-                .locations}');
+                .offendingLocations}');
             SudokuCell cell = board.elementAt(location);
             cell.removeCandidate(elimination.value);
             if (cell.value != null) {
@@ -43,8 +43,8 @@ class SudokuGame {
     print(board);
   }
 
-  List<List<EliminationResult>> solve(SudokuBoard board) {
-    List<List<EliminationResult>> steps = [];
+  List<EliminationResult> solve(SudokuBoard board) {
+    List<EliminationResult> steps = [];
     SudokuRules rules = new SudokuRules(board);
 
     int pass = 0;
@@ -55,7 +55,7 @@ class SudokuGame {
       for (var location in board.asMap.keys) {
         List<EliminationResult> eliminations = rules.evaluate(location, useAdvancedRules: pass > 1);
         if ((eliminations ?? const []).isNotEmpty) {
-          steps.add(eliminations);
+          steps.addAll(eliminations);
           for (var elimination in eliminations) {
             SudokuCell cell = board.elementAt(location);
             cell.removeCandidate(elimination.value);
