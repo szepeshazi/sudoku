@@ -17,7 +17,7 @@ class SudokuGame {
       pass++;
       removed = 0;
       for (var location in board.asMap.keys) {
-        List<EliminationResult> eliminations = rules.evaluate(location, useAdvancedRules: pass > 1);
+        List<EliminationResult> eliminations = rules.reduceCellCanddates(location, useAdvancedRules: pass > 1);
         if ((eliminations ?? const []).isNotEmpty) {
           for (var elimination in eliminations) {
             print('${elimination.value} can be removed at $location due to ${elimination
@@ -53,7 +53,7 @@ class SudokuGame {
       pass++;
       removed = 0;
       for (var location in board.asMap.keys) {
-        List<EliminationResult> eliminations = rules.evaluate(location, useAdvancedRules: pass > 1);
+        List<EliminationResult> eliminations = rules.reduceCellCanddates(location, useAdvancedRules: pass > 1);
         if ((eliminations ?? const []).isNotEmpty) {
           steps.addAll(eliminations);
           for (var elimination in eliminations) {

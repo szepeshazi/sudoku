@@ -9,7 +9,6 @@ enum EliminationRule {
 }
 
 class EliminationResult {
-
   /// Location of the cell where we can eliminate a given candidate
   CellLocation location;
 
@@ -34,7 +33,27 @@ class SudokuRules {
         columns = board.columns,
         sections = board.sections;
 
-  List<EliminationResult> evaluate(CellLocation location, {bool useAdvancedRules: false}) {
+  bool isCompleted() => board.board.firstWhere((cell) => cell.value == null, orElse: null) == null;
+
+  bool isValid() {
+    bool valid = true;
+    for (var location in board.asMap.keys) {
+      int currentValue = board.elementAt(location).value;
+      if (currentValue == null) {
+        continue;
+      }
+      EliminationResult result = hasValueInSameRow(currentValue, location);
+      result ??= hasValueInSameColumn(currentValue, location);
+      result ??= hasValueInSameSection(currentValue, location);
+      if (result != null) {
+        valid = false;
+        break;
+      }
+    }
+    return valid;
+  }
+
+  List<EliminationResult> reduceCellCanddates(CellLocation location, {bool useAdvancedRules: false}) {
     List<EliminationResult> results;
     SudokuCell cell = board.elementAt(location);
     if (cell.value != null) return null;
@@ -62,6 +81,7 @@ class SudokuRules {
 
     if (sameValueLocations?.length > 0) {
       result = new EliminationResult()
+        ..location = location
         ..reason = EliminationRule.valueInSameRow
         ..value = value
         ..offendingLocations = [sameValueLocations.first];
@@ -76,6 +96,7 @@ class SudokuRules {
 
     if (sameValueLocations?.length > 0) {
       result = new EliminationResult()
+        ..location = location
         ..reason = EliminationRule.valueInSameColumn
         ..value = value
         ..offendingLocations = [sameValueLocations.first];
@@ -90,6 +111,7 @@ class SudokuRules {
 
     if (sameValueLocations?.length > 0) {
       result = new EliminationResult()
+        ..location = location
         ..reason = EliminationRule.valueInSameSection
         ..value = value
         ..offendingLocations = [sameValueLocations.first];
@@ -111,6 +133,7 @@ class SudokuRules {
       }
       if (sameCandidates.isNotEmpty && sameCandidates.every((loc) => loc.y == location.y)) {
         result = new EliminationResult()
+          ..location = location
           ..reason = EliminationRule.valueLockedByOtherSection
           ..value = value
           ..offendingLocations = sameCandidates;
@@ -129,6 +152,7 @@ class SudokuRules {
         }
         if (sameCandidates.isNotEmpty && sameCandidates.every((loc) => loc.x == location.x)) {
           result = new EliminationResult()
+            ..location = location
             ..reason = EliminationRule.valueLockedByOtherSection
             ..value = value
             ..offendingLocations = sameCandidates;
@@ -160,6 +184,7 @@ class SudokuRules {
         candidateLocations.keys.firstWhere((cd) => candidateLocations[cd].length == 1, orElse: () => null);
     if (singleValue != null) {
       result = new EliminationResult()
+        ..location = location
         ..reason = EliminationRule.isOtherSingleCandidateInSection
         ..value = value
         ..offendingLocations = candidateLocations[singleValue];

@@ -19,17 +19,19 @@ class SudokuCell extends Cloneable<SudokuCell> {
   set candidates(Set<int> newValues) {
     _value = null;
     _candidates = newValues.toSet();
-    _validate();
+    _resolveSingleCandidate();
   }
 
   Set<int> get candidates => _candidates;
 
-  void removeCandidate(int candidate) {
+  void removeCandidate(int candidate, {bool autoLock: true}) {
     _candidates.remove(candidate);
-    _validate();
+    if (autoLock) {
+      _resolveSingleCandidate();
+    }
   }
 
-  void _validate() {
+  void _resolveSingleCandidate() {
     if (_candidates.length == 1) {
       value = _candidates.first;
       _candidates = null;

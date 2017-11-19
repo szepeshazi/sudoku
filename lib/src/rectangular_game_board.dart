@@ -148,6 +148,9 @@ class RectangularGameBoard<T extends Cloneable<T>> {
     return locations;
   }
 
-    @override
+  RectangularGameBoard<T> clone() =>
+      new RectangularGameBoard<T>(x, y)..board = new List<T>.from(board).map((cell) => cell.clone());
+
+  @override
   String toString() => rows.map((row) => '$row').join('\r\n');
 }
