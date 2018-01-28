@@ -49,22 +49,29 @@ class SudokuGame {
 
     int pass = 0;
     int removed;
+    int resolved;
+    bool boardClean = false;
     do {
       pass++;
       removed = 0;
+      resolved = 0;
       for (var location in board.asMap.keys) {
-        List<EliminationResult> eliminations = rules.reduceCellCanddates(location, useAdvancedRules: pass > 1);
+        List<EliminationResult> eliminations = rules.reduceCellCanddates(location, useAdvancedRules: boardClean);
         if ((eliminations ?? const []).isNotEmpty) {
           steps.addAll(eliminations);
+          SudokuCell cell = board.elementAt(location);
           for (var elimination in eliminations) {
-            SudokuCell cell = board.elementAt(location);
             cell.removeCandidate(elimination.value);
-            if (cell.value != null) {
-              board.cleanUp(location);
-            }
             removed++;
+            if (cell.value != null) {
+              resolved++;
+              boardClean = false;
+            }
           }
         }
+      }
+      if (resolved == 0) {
+        boardClean = true;
       }
     } while (removed > 0);
     return steps;
