@@ -47,12 +47,13 @@ class SudokuGame {
     List<EliminationResult> steps = [];
     SudokuRules rules = new SudokuRules(board);
 
-    int pass = 0;
     int removed;
     int resolved;
     bool boardClean = false;
     do {
-      pass++;
+      if (resolved == 0) {
+        boardClean = true;
+      }
       removed = 0;
       resolved = 0;
       for (var location in board.asMap.keys) {
@@ -70,10 +71,7 @@ class SudokuGame {
           }
         }
       }
-      if (resolved == 0) {
-        boardClean = true;
-      }
-    } while (removed > 0);
+    } while (removed > 0 || !boardClean);
     return steps;
   }
 }
