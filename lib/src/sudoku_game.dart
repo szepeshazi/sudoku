@@ -23,8 +23,14 @@ class SudokuGame {
             print('${elimination.value} can be removed at $location due to ${elimination
                 .reason} occuring at ${elimination
                 .offendingLocations}');
+            if (elimination.reason == EliminationRule.isValueLockedInSection) {
+              print(board);
+            }
             SudokuCell cell = board.elementAt(location);
             cell.removeCandidate(elimination.value);
+            if (elimination.reason == EliminationRule.isValueLockedInSection) {
+              print(board);
+            }
             if (cell.value != null) {
               filled[location] = cell;
               var newlyFilled = board.cleanUp(location);

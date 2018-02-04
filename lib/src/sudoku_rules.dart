@@ -1,11 +1,14 @@
 import 'package:sudoku_core/sudoku_core.dart';
+import 'package:trotter/trotter.dart';
+import 'package:collection/collection.dart';
 
 enum EliminationRule {
   valueInSameRow,
   valueInSameColumn,
   valueInSameSection,
   valueLockedByOtherSection,
-  isOtherSingleCandidateInSection
+  isOtherSingleCandidateInSection,
+  isValueLockedInSection
 }
 
 class EliminationResult {
@@ -66,6 +69,7 @@ class SudokuRules {
       if (useAdvancedRules) {
         result ??= isValueLockedByOtherSection(candidate, location);
         result ??= isOtherSingleCandidateInSection(candidate, location);
+        result ??= isValueLockedInSection(candidate, location);
       }
       if (result != null) {
         results.add(result);
@@ -196,9 +200,9 @@ class SudokuRules {
   EliminationResult isValueLockedInSection(int value, CellLocation location) {
     EliminationResult result;
     final emptySet = new Set<int>();
-    var sectionLocations = board.sameSectionLocations(location);
-    Set<int> otherCandidateValues = board.elementAt(location).candidates
-      ..removeWhere((candidate) => candidate == value);
+    var sectionLocations = board.sameSectionLocations(location, includeSelf: true);
+    Set<int> otherCandidateValues =
+        board.elementAt(location).candidates.where((candidate) => candidate != value).toSet();
     int maxSetSize = otherCandidateValues.length;
 
     Map<int, List<CellLocation>> candidateLocations = {};
@@ -210,11 +214,40 @@ class SudokuRules {
         }
       }
     }
+    print('For location: $location and value: $value other candidate locations: $candidateLocations');
 
-    for (var setSize = 1; setSize <= maxSetSize; setSize++) {
+    outer:
+    for (var setSize = 2; setSize <= maxSetSize; setSize++) {
       // Form n-sized sets of candidate values and check if all has the same locations
+      var combinations = new Combinations(setSize, otherCandidateValues.toList());
+      for (var combination in combinations) {
+        // print('For location: $location and value: $value checking combination: $combination');
+        List<CellLocation> currentLocations;
+        bool isValid = true;
+        for (var candidate in combination) {
+          if (candidateLocations[candidate].length != setSize) {
+            isValid = false;
+            break;
+          }
+          if (currentLocations == null) {
+            currentLocations = new List.from(candidateLocations[candidate]);
+          } else {
+            if (!(const UnorderedIterableEquality().equals(candidateLocations[candidate], currentLocations))) {
+              isValid = false;
+              break;
+            }
+          }
+        }
+        if (isValid) {
+          result = new EliminationResult()
+            ..location = location
+            ..reason = EliminationRule.isValueLockedInSection
+            ..value = value
+            ..offendingLocations = currentLocations;
+          break outer;
+        }
+      }
     }
-
     return result;
   }
 }
